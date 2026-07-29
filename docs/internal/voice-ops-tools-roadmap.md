@@ -12,6 +12,7 @@
 | **P4** QA Center + Compliance | **MVP** | `/api/v1/qa-center/*`, UI `/qa-center`, override + audit |
 | **P5** Schulung MVP | **MVP** | `/api/v1/training/*`, UI `/training`, shadow + text drills |
 | **P6** Voice-Eval + Training-Voice | **MVP** | score-run + guarded SMALLWEBRTC + training voice; no dual-role |
+| **P6 polish** Limits / deploy | **done** | env guards, pipeline duration cap, `/voice/guards`, deploy checklist |
 
 ## P0 Endpoints
 - `GET /api/v1/outcomes/health`
@@ -77,7 +78,8 @@ Stored on `workflows.call_disposition_codes` (backward-compatible extension).
 - `POST /api/v1/evals/voice/sessions` — create SHORT SMALLWEBRTC (`VEVAL-*`), rate-limited
 - `POST /api/v1/evals/voice/sessions/{id}/finalize`
 - Training: `mode=voice`, `POST .../voice/start|complete` (`VTRAIN-*`)
-- Cost guards: 10 sessions/org/hour, batch=1, duration hint ≤180s, quota 402
+- Cost guards: default **5**/org/hour, batch=1, duration hint **60s** / hard **120s**, pipeline hard-cap, quota 402, `VOICE_EVAL_*` env
+- `GET /api/v1/evals/voice/guards` · deploy: `docs/internal/voice-ops-deploy-checklist.md`
 - UI: `/evals` Voice-Tab, `/training` voice modules
 - Docs: `docs/internal/voice-eval.md`, `training-learning-design.md`
 - Tests: `api/tests/test_voice_eval.py`

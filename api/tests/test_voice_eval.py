@@ -1,12 +1,19 @@
 """Unit tests for voice eval scoring + cost guards (no DB)."""
 
+import os
+
 from api.schemas.text_eval import EvalAssertion
 from api.services.evals.voice_guards import (
+    VOICE_EVAL_HARD_MAX_DURATION_SECONDS,
     VOICE_EVAL_MAX_BATCH,
+    VOICE_EVAL_MAX_DURATION_HINT_SECONDS,
     VOICE_EVAL_MAX_SESSIONS_PER_ORG_HOUR,
     VoiceEvalGuardError,
     check_voice_eval_allowed,
     clamp_max_duration_seconds,
+    http_status_for_guard,
+    public_guard_config,
+    resolve_voice_eval_duration_cap,
 )
 from api.services.evals.voice_score import (
     extract_transcript,
@@ -121,15 +128,35 @@ def test_score_voice_drill_adapter():
 
 
 def test_clamp_duration():
-    assert clamp_max_duration_seconds(None) == 90
+    assert clamp_max_duration_seconds(None) == VOICE_EVAL_MAX_DURATION_HINT_SECONDS
     assert clamp_max_duration_seconds(30) == 30
-    assert clamp_max_duration_seconds(999) == 180
-    assert clamp_max_duration_seconds(-5) == 90
+    assert (
+        clamp_max_duration_seconds(999) == VOICE_EVAL_HARD_MAX_DURATION_SECONDS
+    )
+    assert clamp_max_duration_seconds(-5) == VOICE_EVAL_MAX_DURATION_HINT_SECONDS
+
+
+def test_resolve_duration_cap_from_initial_context():
+    assert resolve_voice_eval_duration_cap(None) is None
+    assert resolve_voice_eval_duration_cap({}) is None
+    assert (
+        resolve_voice_eval_duration_cap(
+            {"voice_eval": {"max_duration_hint_seconds": 45}}
+        )
+        == 45
+    )
+    assert (
+        resolve_voice_eval_duration_cap(
+            {"training_voice": {"max_duration_hint_seconds": 999}}
+        )
+        == VOICE_EVAL_HARD_MAX_DURATION_SECONDS
+    )
 
 
 def test_guard_rate_limit():
     ok = check_voice_eval_allowed(recent_session_count=0, batch_size=1)
     assert ok["allowed"] is True
+    assert ok["pipeline_duration_cap"] is True
     try:
         check_voice_eval_allowed(
             recent_session_count=VOICE_EVAL_MAX_SESSIONS_PER_ORG_HOUR,
@@ -138,14 +165,18 @@ def test_guard_rate_limit():
         assert False, "expected rate limit"
     except VoiceEvalGuardError as e:
         assert e.code == "rate_limited"
+        assert http_status_for_guard(e.code) == 429
 
 
 def test_guard_batch():
     try:
-        check_voice_eval_allowed(recent_session_count=0, batch_size=VOICE_EVAL_MAX_BATCH + 1)
+        check_voice_eval_allowed(
+            recent_session_count=0, batch_size=VOICE_EVAL_MAX_BATCH + 1
+        )
         assert False, "expected batch error"
     except VoiceEvalGuardError as e:
         assert e.code == "batch_too_large"
+        assert http_status_for_guard(e.code) == 400
 
 
 def test_guard_feature_flag():
@@ -154,3 +185,11 @@ def test_guard_feature_flag():
         assert False
     except VoiceEvalGuardError as e:
         assert e.code == "feature_disabled"
+        assert http_status_for_guard(e.code) == 403
+
+
+def test_public_guard_config():
+    cfg = public_guard_config()
+    assert "enabled" in cfg
+    assert cfg["max_batch"] == 1
+    assert "VOICE_EVAL_ENABLED" in cfg["env_keys"]

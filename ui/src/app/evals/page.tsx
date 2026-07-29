@@ -23,8 +23,10 @@ import {
   type VoiceSessionCreateResponse,
   createVoiceEvalSession,
   finalizeVoiceEvalSession,
+  fetchVoiceGuards,
   runTextEval,
   scoreVoiceRun,
+  type VoiceGuardsStatus,
 } from "@/lib/api/evals";
 import { useAuth } from "@/lib/auth";
 
@@ -52,6 +54,7 @@ const DEFAULT_VOICE_ASSERTIONS = `[
 export default function EvalsPage() {
   const auth = useAuth();
   const [tab, setTab] = useState<"text" | "voice">("text");
+  const [guards, setGuards] = useState<VoiceGuardsStatus | null>(null);
   const [workflows, setWorkflows] = useState<WorkflowOption[]>([]);
   const [workflowId, setWorkflowId] = useState("");
   const [jsonText, setJsonText] = useState(DEFAULT_SCENARIO);
@@ -84,6 +87,17 @@ export default function EvalsPage() {
       }
     })();
   }, [auth.isAuthenticated]);
+
+  useEffect(() => {
+    if (!auth.isAuthenticated || tab !== "voice") return;
+    (async () => {
+      try {
+        setGuards(await fetchVoiceGuards());
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  }, [auth.isAuthenticated, tab]);
 
   const parseAssertions = () => {
     try {

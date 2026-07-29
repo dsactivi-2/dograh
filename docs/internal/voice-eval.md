@@ -41,7 +41,7 @@
 - Client verbindet über existierendes Signaling:  
   `/api/v1/ws/signaling/{workflow_id}/{run_id}`
 - **Kein** Audio-Inject, **kein** Dual-Role
-- Guards: max 10 Sessions/Org/Stunde, batch=1, duration hint ≤180s
+- Guards: max 5 Sessions/Org/Stunde (env), batch=1, duration ≤120s hard + **pipeline cap**
 - Quota: `authorize_workflow_run_start` (402)
 
 ### C) Training Voice
@@ -50,17 +50,20 @@
 - `POST .../voice/start` → `VTRAIN-*` SMALLWEBRTC
 - `POST .../voice/complete` → Score + `training_attempts`
 
-## Cost Guards
+## Cost Guards (production polish)
 
-| Guard | Wert |
-|-------|------|
-| Max sessions / org / hour | 10 (`VEVAL-%` + `VTRAIN-%`) |
-| Max batch | 1 |
-| Duration hint default | 90s (hard clamp 180s) |
-| Feature flag | `VOICE_EVAL_FEATURE_ENABLED` |
-| Unbounded batch voice | **verboten** |
+| Guard | Default | Env |
+|-------|---------|-----|
+| Max sessions / org / hour | **5** (`VEVAL-%` + `VTRAIN-%`) | `VOICE_EVAL_MAX_SESSIONS_PER_ORG_HOUR` |
+| Max batch | 1 | fixed |
+| Duration hint default | **60s** | `VOICE_EVAL_MAX_DURATION_HINT_SECONDS` |
+| Hard clamp | **120s** | `VOICE_EVAL_HARD_MAX_DURATION_SECONDS` |
+| Feature kill switch | on | `VOICE_EVAL_ENABLED` |
+| Pipeline hard-cap | **an** | reads `initial_context.voice_eval|training_voice.max_duration_hint_seconds` in `run_pipeline` |
 
-Hinweis: Pipeline `max_call_duration` kommt weiterhin aus der Workflow-Definition (default 300s). Der Hint steuert UX/Sampling; UI soll früh auflegen.
+Status: `GET /api/v1/evals/voice/guards` · health embeds `voice.guards`.
+
+Unbounded batch voice remains **verboten**.
 
 ## Scoring-Reuse
 
@@ -87,5 +90,7 @@ Hinweis: Pipeline `max_call_duration` kommt weiterhin aus der Workflow-Definitio
 - [ ] `/evals` → Session anlegen → Run-ID + Signaling-Pfad
 - [ ] Nach Call → Finalize → Transcript + Score
 - [ ] `/training` → Modul Voice anlegen → Start → Complete
-- [ ] Rate-Limit: 11. Session → 429
+- [ ] Rate-Limit: 6. Session → 429 (default 5/h)
+- [ ] `GET /evals/voice/guards` + Cost-Guards card on `/evals` Voice
+- [ ] Pipeline hangs up at max_duration_hint (not full 300s)
 - [ ] QA Center: Run mit `annotations.voice_eval` sichtbar

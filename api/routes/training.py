@@ -34,6 +34,7 @@ from api.services.evals.voice_guards import (
     VoiceEvalGuardError,
     check_voice_eval_allowed,
     clamp_max_duration_seconds,
+    http_status_for_guard,
     voice_eval_guard_payload,
 )
 from api.services.evals.voice_score import score_voice_run
@@ -133,6 +134,7 @@ async def training_health():
         "status": "ok",
         "module": "training",
         "modes": ["shadow", "text", "voice"],
+        "voice_pipeline_duration_cap": True,
         "schema_version": 1,
     }
 
@@ -604,7 +606,7 @@ async def start_voice_drill(
         guards = check_voice_eval_allowed(recent_session_count=recent, batch_size=1)
     except VoiceEvalGuardError as e:
         raise HTTPException(
-            status_code=429 if e.code == "rate_limited" else 400,
+            status_code=http_status_for_guard(e.code),
             detail={"code": e.code, "message": e.message},
         ) from e
 
@@ -649,8 +651,8 @@ async def start_voice_drill(
     guard_meta = voice_eval_guard_payload(
         recent_session_count=recent,
         max_duration_seconds=max_dur,
+        source="training_voice_drill",
     )
-    guard_meta["source"] = "training_voice_drill"
     await db_client.update_workflow_run(
         workflow_run.id,
         annotations={

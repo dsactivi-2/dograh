@@ -27,6 +27,8 @@ from api.services.evals.voice_guards import (
     VoiceEvalGuardError,
     check_voice_eval_allowed,
     clamp_max_duration_seconds,
+    http_status_for_guard,
+    public_guard_config,
     voice_eval_guard_payload,
 )
 from api.services.evals.voice_score import score_voice_run
@@ -83,8 +85,35 @@ async def evals_health():
             "create_session": True,
             "headless_audio": False,
             "dual_role": False,
+            "guards": public_guard_config(),
         },
     }
+
+
+@router.get("/voice/guards")
+async def voice_eval_guards_status(user: UserModel = Depends(get_user)):
+    """Current org rate-limit status + static guard config (dashboard-friendly)."""
+    org_id = _require_org(user)
+    recent = await db_client.count_recent_voice_eval_sessions(org_id, hours=1)
+    cfg = public_guard_config()
+    try:
+        live = check_voice_eval_allowed(recent_session_count=recent, batch_size=1)
+        return {
+            "organization_id": org_id,
+            "allowed": True,
+            "recent_session_count": recent,
+            **cfg,
+            **{k: live[k] for k in ("remaining_after",) if k in live},
+        }
+    except VoiceEvalGuardError as e:
+        return {
+            "organization_id": org_id,
+            "allowed": False,
+            "code": e.code,
+            "message": e.message,
+            "recent_session_count": recent,
+            **cfg,
+        }
 
 
 @router.post("/text/run", response_model=TextEvalRunResponse)
@@ -257,7 +286,7 @@ async def create_voice_eval_session(
         guards = check_voice_eval_allowed(recent_session_count=recent, batch_size=1)
     except VoiceEvalGuardError as e:
         raise HTTPException(
-            status_code=429 if e.code == "rate_limited" else 400,
+            status_code=http_status_for_guard(e.code),
             detail={"code": e.code, "message": e.message},
         ) from e
 

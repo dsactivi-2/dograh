@@ -78,7 +78,21 @@ export type ShadowQuizQuestion = {
 
 function errMsg(err: unknown, fallback: string): string {
   if (typeof err === "object" && err && "detail" in err) {
-    return String((err as { detail: unknown }).detail);
+    const d = (err as { detail: unknown }).detail;
+    if (typeof d === "object" && d !== null) {
+      const o = d as { message?: unknown; code?: unknown };
+      if (o.message != null) {
+        return o.code != null
+          ? `${String(o.code)}: ${String(o.message)}`
+          : String(o.message);
+      }
+      try {
+        return JSON.stringify(d);
+      } catch {
+        return fallback;
+      }
+    }
+    if (typeof d === "string") return d;
   }
   if (err instanceof Error) return err.message;
   return fallback;

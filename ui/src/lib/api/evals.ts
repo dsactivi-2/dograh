@@ -52,8 +52,23 @@ export type TextEvalRunResponse = {
 
 function errMsg(err: unknown, fallback: string): string {
   if (typeof err === "object" && err && "detail" in err) {
-    return String((err as { detail: unknown }).detail);
+    const d = (err as { detail: unknown }).detail;
+    if (typeof d === "object" && d !== null) {
+      const o = d as { message?: unknown; code?: unknown };
+      if (o.message != null) {
+        return o.code != null
+          ? `${String(o.code)}: ${String(o.message)}`
+          : String(o.message);
+      }
+      try {
+        return JSON.stringify(d);
+      } catch {
+        return fallback;
+      }
+    }
+    if (typeof d === "string") return d;
   }
+  if (err instanceof Error) return err.message;
   return fallback;
 }
 
@@ -168,3 +183,22 @@ export async function finalizeVoiceEvalSession(
   return res.data as VoiceScoreResult;
 }
 
+export type VoiceGuardsStatus = {
+  organization_id?: number;
+  allowed: boolean;
+  enabled: boolean;
+  recent_session_count?: number;
+  remaining_after?: number;
+  max_sessions_per_org_hour: number;
+  max_duration_hint_seconds: number;
+  hard_max_duration_seconds: number;
+  max_batch: number;
+  code?: string;
+  message?: string;
+};
+
+export async function fetchVoiceGuards(): Promise<VoiceGuardsStatus> {
+  const res = await client.get({ url: "/api/v1/evals/voice/guards" });
+  if (res.error) throw new Error(errMsg(res.error, "Voice guards failed"));
+  return res.data as VoiceGuardsStatus;
+}

@@ -1448,3 +1448,316 @@ class KnowledgeBaseChunkModel(Base):
             postgresql_ops={"embedding": "vector_cosine_ops"},
         ),
     )
+
+
+class StepsalesLeadModel(Base):
+    """Org-scoped sales lead for the Stepsales multiposting motion."""
+
+    __tablename__ = "stepsales_leads"
+
+    id = Column(Integer, primary_key=True, index=True)
+    lead_id = Column(String(64), unique=True, nullable=False, index=True)
+    organization_id = Column(
+        Integer, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
+    )
+    company_name = Column(String(255), nullable=False)
+    contact_name = Column(String(255), nullable=True)
+    role = Column(String(255), nullable=True)
+    email = Column(String(255), nullable=True)
+    phone = Column(String(64), nullable=True)
+    active_hiring = Column(Boolean, nullable=False, default=False)
+    roles_hiring_for = Column(JSON, nullable=False, default=list)
+    urgency = Column(String(32), nullable=True)
+    timeline = Column(String(255), nullable=True)
+    budget_signal = Column(String(100), nullable=True)
+    interest_level = Column(String(32), nullable=True)
+    next_step = Column(String(200), nullable=True)
+    score = Column(Integer, nullable=False, default=0)
+    status = Column(String(64), nullable=False, default="new")
+    extra = Column(JSON, nullable=False, default=dict)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    updated_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+    )
+
+    __table_args__ = (
+        Index("ix_stepsales_leads_organization_id", "organization_id"),
+        Index("ix_stepsales_leads_status", "status"),
+        Index("ix_stepsales_leads_email", "email"),
+    )
+
+
+class StepsalesCallOutcomeModel(Base):
+    """Structured call outcome for Stepsales conversations."""
+
+    __tablename__ = "stepsales_call_outcomes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    outcome_id = Column(String(64), unique=True, nullable=False, index=True)
+    organization_id = Column(
+        Integer, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
+    )
+    lead_id = Column(String(64), nullable=True, index=True)
+    call_id = Column(String(128), nullable=True)
+    outcome = Column(String(64), nullable=False)
+    summary = Column(Text, nullable=False)
+    interest_level = Column(String(32), nullable=True)
+    objection_type = Column(String(200), nullable=True)
+    next_step = Column(String(200), nullable=True)
+    callback_date = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+
+    __table_args__ = (
+        Index("ix_stepsales_call_outcomes_org", "organization_id"),
+        Index("ix_stepsales_call_outcomes_lead", "lead_id"),
+    )
+
+
+class StepsalesOfferModel(Base):
+    """Commercial offer created during a Stepsales conversation."""
+
+    __tablename__ = "stepsales_offers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    offer_id = Column(String(64), unique=True, nullable=False, index=True)
+    organization_id = Column(
+        Integer, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
+    )
+    lead_id = Column(String(64), nullable=False, index=True)
+    package_id = Column(String(64), nullable=False)
+    list_price = Column(Float, nullable=False)
+    discount_percent = Column(Float, nullable=False, default=0.0)
+    discount_reason = Column(String(500), nullable=True)
+    final_price = Column(Float, nullable=False)
+    valid_until = Column(DateTime(timezone=True), nullable=True)
+    status = Column(String(64), nullable=False, default="proposal_pending")
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    updated_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+    )
+
+    __table_args__ = (
+        Index("ix_stepsales_offers_org", "organization_id"),
+        Index("ix_stepsales_offers_lead", "lead_id"),
+    )
+
+
+class StepsalesFollowupModel(Base):
+    """Follow-up email / material send log."""
+
+    __tablename__ = "stepsales_followups"
+
+    id = Column(Integer, primary_key=True, index=True)
+    followup_id = Column(String(64), unique=True, nullable=False, index=True)
+    organization_id = Column(
+        Integer, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
+    )
+    lead_id = Column(String(64), nullable=False, index=True)
+    email = Column(String(255), nullable=False)
+    followup_type = Column(String(64), nullable=False)
+    template_id = Column(String(128), nullable=False, default="default_v1")
+    next_step = Column(String(200), nullable=True)
+    subject = Column(String(255), nullable=True)
+    body_preview = Column(Text, nullable=True)
+    delivery_status = Column(String(32), nullable=False, default="queued")
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+
+    __table_args__ = (Index("ix_stepsales_followups_org", "organization_id"),)
+
+
+class StepsalesAppointmentModel(Base):
+    """Second-call / callback appointment."""
+
+    __tablename__ = "stepsales_appointments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    appointment_id = Column(String(64), unique=True, nullable=False, index=True)
+    organization_id = Column(
+        Integer, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
+    )
+    lead_id = Column(String(64), nullable=False, index=True)
+    email = Column(String(255), nullable=True)
+    preferred_date = Column(String(32), nullable=False)
+    preferred_time = Column(String(16), nullable=False)
+    timezone = Column(String(64), nullable=False, default="Europe/Berlin")
+    notes = Column(Text, nullable=True)
+    status = Column(String(64), nullable=False, default="second_call_scheduled")
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+
+    __table_args__ = (Index("ix_stepsales_appointments_org", "organization_id"),)
+
+
+class StepsalesPaymentModel(Base):
+    """Payment session / status for a Stepsales offer."""
+
+    __tablename__ = "stepsales_payments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    payment_reference = Column(String(64), unique=True, nullable=False, index=True)
+    organization_id = Column(
+        Integer, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
+    )
+    lead_id = Column(String(64), nullable=False, index=True)
+    offer_id = Column(String(64), nullable=False, index=True)
+    amount = Column(Float, nullable=False)
+    allowed_methods = Column(JSON, nullable=False, default=list)
+    payment_method = Column(String(64), nullable=True)
+    payment_link = Column(String(512), nullable=False)
+    status = Column(String(32), nullable=False, default="pending")
+    post_sale_triggered = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    updated_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+    )
+
+    __table_args__ = (Index("ix_stepsales_payments_org", "organization_id"),)
+
+
+class StepsalesEventModel(Base):
+    """Append-only audit log for Stepsales actions."""
+
+    __tablename__ = "stepsales_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(
+        Integer, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
+    )
+    lead_id = Column(String(64), nullable=True, index=True)
+    event_type = Column(String(64), nullable=False)
+    payload = Column(JSON, nullable=False, default=dict)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+
+    __table_args__ = (
+        Index("ix_stepsales_events_org", "organization_id"),
+        Index("ix_stepsales_events_type", "event_type"),
+    )
+
+
+class ScriptLibraryEntryModel(Base):
+    """Org-scoped script library entry linked to a workflow / definition.
+
+    Used by internal voice-ops tools: tags, owner, approval queue, and
+    prompt search surface over agent definitions.
+    """
+
+    __tablename__ = "script_library_entries"
+
+    id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(
+        Integer, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
+    )
+    workflow_id = Column(
+        Integer, ForeignKey("workflows.id", ondelete="CASCADE"), nullable=False
+    )
+    definition_id = Column(
+        Integer, ForeignKey("workflow_definitions.id", ondelete="SET NULL"), nullable=True
+    )
+    title = Column(String(255), nullable=False)
+    description = Column(Text, nullable=False, default="")
+    tags = Column(JSON, nullable=False, default=list)
+    owner_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    approval_status = Column(
+        String(32), nullable=False, default="draft", server_default=text("'draft'")
+    )
+    approved_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    approved_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    updated_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+    )
+
+    __table_args__ = (
+        Index("ix_script_library_org", "organization_id"),
+        Index("ix_script_library_workflow", "workflow_id"),
+        Index("ix_script_library_status", "approval_status"),
+        Index("ix_script_library_owner", "owner_user_id"),
+    )
+
+
+class TrainingModuleModel(Base):
+    """Org-scoped training module for agent coaching (P5).
+
+    mode: shadow | text | voice (P6 short WebRTC drill + score)
+    content JSON holds mode-specific payload (script_excerpt, quiz, scenario, …).
+    """
+
+    __tablename__ = "training_modules"
+
+    id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(
+        Integer, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
+    )
+    title = Column(String(255), nullable=False)
+    description = Column(Text, nullable=False, default="")
+    mode = Column(
+        String(32), nullable=False, default="shadow", server_default=text("'shadow'")
+    )
+    workflow_id = Column(
+        Integer, ForeignKey("workflows.id", ondelete="SET NULL"), nullable=True
+    )
+    script_entry_id = Column(
+        Integer,
+        ForeignKey("script_library_entries.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    # success disposition codes used when scoring text drills
+    success_codes = Column(JSON, nullable=False, default=list)
+    tags = Column(JSON, nullable=False, default=list)
+    difficulty = Column(
+        String(32), nullable=False, default="beginner", server_default=text("'beginner'")
+    )
+    pass_score = Column(Float, nullable=False, default=70.0)
+    content = Column(JSON, nullable=False, default=dict)
+    is_published = Column(Boolean, nullable=False, default=True)
+    created_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    updated_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+    )
+
+    __table_args__ = (
+        Index("ix_training_modules_org", "organization_id"),
+        Index("ix_training_modules_mode", "mode"),
+        Index("ix_training_modules_published", "is_published"),
+    )
+
+
+class TrainingAttemptModel(Base):
+    """Per-user attempt at a training module (progress + score)."""
+
+    __tablename__ = "training_attempts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(
+        Integer, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
+    )
+    module_id = Column(
+        Integer, ForeignKey("training_modules.id", ondelete="CASCADE"), nullable=False
+    )
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    mode = Column(String(32), nullable=False)
+    score = Column(Float, nullable=False, default=0.0)
+    passed = Column(Boolean, nullable=False, default=False)
+    # full result payload (quiz answers, eval turns, disposition, …)
+    result = Column(JSON, nullable=False, default=dict)
+    workflow_run_id = Column(
+        Integer, ForeignKey("workflow_runs.id", ondelete="SET NULL"), nullable=True
+    )
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+
+    __table_args__ = (
+        Index("ix_training_attempts_org", "organization_id"),
+        Index("ix_training_attempts_module", "module_id"),
+        Index("ix_training_attempts_user", "user_id"),
+        Index("ix_training_attempts_user_module", "user_id", "module_id"),
+    )

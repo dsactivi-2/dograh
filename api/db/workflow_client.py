@@ -811,12 +811,17 @@ class WorkflowClient(BaseDBClient):
                 return
 
             existing = workflow.call_disposition_codes or {}
+            if isinstance(existing, list):
+                existing = {"disposition_codes": list(existing)}
             codes = list(existing.get("disposition_codes", []))
             if disposition_code in codes:
                 return
 
             codes.append(disposition_code)
-            workflow.call_disposition_codes = {"disposition_codes": codes}
+            # Preserve taxonomy extensions (success_codes, code_meta)
+            updated = dict(existing) if isinstance(existing, dict) else {}
+            updated["disposition_codes"] = codes
+            workflow.call_disposition_codes = updated
 
             try:
                 await session.commit()

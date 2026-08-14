@@ -1,0 +1,3607 @@
+[
+  {
+    "template_key": "cold_outreach_direct_sdr",
+    "template_name": "Cold Outreach - Direct SDR",
+    "template_description": "Erstkontakt für aktuelle Hiring-Signale mit kurzer Relevanzprüfung und Übergang in Qualifizierung.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "d1bf54a2-293b-57e8-a016-b943b96c0572",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche B2B-Sales-Entwicklerin bzw. ein B2B-Sales-Entwickler mit klarem Fokus auf Abschluss. Sprich kurz, natürlich und professionell. Stelle immer nur eine Frage gleichzeitig. Führe das Gespräch aktiv, aber höflich. Gehe standardmäßig auf Listenpreis. Rabatt ist nur bis maximal 10 Prozent erlaubt und nur dann, wenn ein echter Abschluss sehr wahrscheinlich ist. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "9033837f-13cc-5e0d-b4c6-a61229f62a3e",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Guten Tag, ich rufe kurz an, weil Sie vor Kurzem aktiv Personal gesucht haben. Haben Sie gerade 30 Sekunden?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "e09d9412-159a-5820-b442-c41e056e6b1f",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Wenn die Person offen ist, prüfe kurz, ob aktuell noch Recruiting-Druck besteht. Finde heraus, für welche Rollen gesucht wird und ob zusätzliche Reichweite relevant wäre. Wenn Interesse erkennbar ist, sichere einen klaren nächsten Schritt: Qualifizierung, Termin oder Angebotsversand.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "64782571-3652-501c-927f-66a63ce550c0",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "b6f3950f-8508-5136-9632-dca1b01d2c29",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Danke für Ihre Zeit. Ich halte mich an den vereinbarten nächsten Schritt. Auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "d35e27c2-8bfb-5824-9329-8ca6681250bb",
+          "source": "9033837f-13cc-5e0d-b4c6-a61229f62a3e",
+          "target": "e09d9412-159a-5820-b442-c41e056e6b1f",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "147b913e-a8fd-513c-a206-1a40599d5bd9",
+          "source": "e09d9412-159a-5820-b442-c41e056e6b1f",
+          "target": "64782571-3652-501c-927f-66a63ce550c0",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "2918a072-4176-57e8-9ace-d2fa64a4ae40",
+          "source": "64782571-3652-501c-927f-66a63ce550c0",
+          "target": "b6f3950f-8508-5136-9632-dca1b01d2c29",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "cold_outreach",
+    "style": "direct_sdr",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "cold_outreach_consultative_advisor",
+    "template_name": "Cold Outreach - Consultative Advisor",
+    "template_description": "Erstkontakt für aktuelle Hiring-Signale mit kurzer Relevanzprüfung und Übergang in Qualifizierung.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "64fffbb0-655f-5eab-9491-b15fd9ee8fd4",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche B2B-Beraterin bzw. ein B2B-Berater für Recruiting-Reichweite und Multiposting. Sprich ruhig, glaubwürdig und lösungsorientiert. Stelle immer nur eine Frage gleichzeitig. Verstehe zuerst den Hiring-Bedarf, bevor du verkaufst. Führe zu einem klaren nächsten Schritt. Rabatt ist nur gezielt bis maximal 10 Prozent erlaubt, niemals als früher Köder. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "8e8b422b-af99-5fea-958f-f0a7a643ed7a",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Guten Tag, ich rufe kurz an, weil Sie vor Kurzem aktiv Personal gesucht haben. Haben Sie gerade 30 Sekunden?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "cea4985c-5f50-5c79-bd96-25408f40a64c",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Wenn die Person offen ist, prüfe kurz, ob aktuell noch Recruiting-Druck besteht. Finde heraus, für welche Rollen gesucht wird und ob zusätzliche Reichweite relevant wäre. Wenn Interesse erkennbar ist, sichere einen klaren nächsten Schritt: Qualifizierung, Termin oder Angebotsversand.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "bed73288-e62e-5a6e-aa3c-aae8839efd2e",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "59dbc1c1-cd08-5955-a475-54416fbb99ac",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Danke für Ihre Zeit. Ich halte mich an den vereinbarten nächsten Schritt. Auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "247be5bd-c003-59c0-abe2-457c08c17100",
+          "source": "8e8b422b-af99-5fea-958f-f0a7a643ed7a",
+          "target": "cea4985c-5f50-5c79-bd96-25408f40a64c",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "2d83f606-3924-539b-bf7a-ee140865b908",
+          "source": "cea4985c-5f50-5c79-bd96-25408f40a64c",
+          "target": "bed73288-e62e-5a6e-aa3c-aae8839efd2e",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "bdff6d67-620d-504b-ab0c-304fe54deded",
+          "source": "bed73288-e62e-5a6e-aa3c-aae8839efd2e",
+          "target": "59dbc1c1-cd08-5955-a475-54416fbb99ac",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "cold_outreach",
+    "style": "consultative_advisor",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "cold_outreach_hr_specialist",
+    "template_name": "Cold Outreach - HR Specialist",
+    "template_description": "Erstkontakt für aktuelle Hiring-Signale mit kurzer Relevanzprüfung und Übergang in Qualifizierung.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "ce3822cd-0c30-580d-9e22-13556d1c295b",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche Recruiting-Spezialistin bzw. ein deutscher Recruiting-Spezialist für Arbeitgeber mit akutem Personalbedarf. Nutze HR- und Recruiting-Sprache, bleibe professionell und präzise. Stelle immer nur eine Frage gleichzeitig. Verbinde Multiposting mit Time-to-Hire, Reichweite und Bewerberqualität. Rabatt ist nur bis maximal 10 Prozent erlaubt, wenn ein Abschluss unmittelbar dadurch gesichert wird. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "5dc2ae23-ef8c-5733-b22b-7091417f58f7",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Guten Tag, ich rufe kurz an, weil Sie vor Kurzem aktiv Personal gesucht haben. Haben Sie gerade 30 Sekunden?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "28eabe1f-eb83-5ae0-93f3-424a463d204b",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Wenn die Person offen ist, prüfe kurz, ob aktuell noch Recruiting-Druck besteht. Finde heraus, für welche Rollen gesucht wird und ob zusätzliche Reichweite relevant wäre. Wenn Interesse erkennbar ist, sichere einen klaren nächsten Schritt: Qualifizierung, Termin oder Angebotsversand.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "d29f5ded-4c82-5d0c-bd6b-c2043648f0c2",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "98fd0eda-0407-53d1-b82d-e67081b40f27",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Danke für Ihre Zeit. Ich halte mich an den vereinbarten nächsten Schritt. Auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "9d2be6c5-a8dc-54c4-b259-076734bd1bc7",
+          "source": "5dc2ae23-ef8c-5733-b22b-7091417f58f7",
+          "target": "28eabe1f-eb83-5ae0-93f3-424a463d204b",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "7b98064a-42e3-57fa-a408-a28ef1023224",
+          "source": "28eabe1f-eb83-5ae0-93f3-424a463d204b",
+          "target": "d29f5ded-4c82-5d0c-bd6b-c2043648f0c2",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "429df584-7b27-53b2-8543-9d088e8a9af3",
+          "source": "d29f5ded-4c82-5d0c-bd6b-c2043648f0c2",
+          "target": "98fd0eda-0407-53d1-b82d-e67081b40f27",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "cold_outreach",
+    "style": "hr_specialist",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "qualification_direct_sdr",
+    "template_name": "Qualification - Direct SDR",
+    "template_description": "Bedarf, Dringlichkeit, Entscheidungsreife und Multiposting-Fit systematisch qualifizieren.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "49ad1abb-1a1b-563f-a0cd-471a7247b0f7",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche B2B-Sales-Entwicklerin bzw. ein B2B-Sales-Entwickler mit klarem Fokus auf Abschluss. Sprich kurz, natürlich und professionell. Stelle immer nur eine Frage gleichzeitig. Führe das Gespräch aktiv, aber höflich. Gehe standardmäßig auf Listenpreis. Rabatt ist nur bis maximal 10 Prozent erlaubt und nur dann, wenn ein echter Abschluss sehr wahrscheinlich ist. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "a547cd03-ac22-595e-86a0-48e3e95c8137",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Danke, dass Sie kurz Zeit haben. Ich würde gern in zwei Minuten verstehen, ob zusätzliche Reichweite für Ihre Stellen aktuell sinnvoll ist.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "89dba8b3-42d0-5620-b0f0-4b96101810d4",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Qualifiziere Hiring-Bedarf, offene Rollen, Dringlichkeit, aktuelle Kanäle, Budgetsignal und Entscheidungsreife. Arbeite auf eine klare Empfehlung hin: Demo, Angebot, Follow-up oder höflicher Abschluss.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "dbb505bf-3941-5233-abab-a98c0eb3d1f4",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "9c0d12dd-155b-5948-82d9-fcf5aaaffc78",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Danke, das war hilfreich. Ich gehe mit dem vereinbarten nächsten Schritt weiter. Auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "4acde233-1f3e-5566-9cd4-9f18598df755",
+          "source": "a547cd03-ac22-595e-86a0-48e3e95c8137",
+          "target": "89dba8b3-42d0-5620-b0f0-4b96101810d4",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "0ed96714-5540-58d8-b294-35a8a9ae36d4",
+          "source": "89dba8b3-42d0-5620-b0f0-4b96101810d4",
+          "target": "dbb505bf-3941-5233-abab-a98c0eb3d1f4",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "09adb793-0e5a-5966-bd69-21f093f1c251",
+          "source": "dbb505bf-3941-5233-abab-a98c0eb3d1f4",
+          "target": "9c0d12dd-155b-5948-82d9-fcf5aaaffc78",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "qualification",
+    "style": "direct_sdr",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "qualification_consultative_advisor",
+    "template_name": "Qualification - Consultative Advisor",
+    "template_description": "Bedarf, Dringlichkeit, Entscheidungsreife und Multiposting-Fit systematisch qualifizieren.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "4b305328-d26e-5699-9f65-0b57662b6dd8",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche B2B-Beraterin bzw. ein B2B-Berater für Recruiting-Reichweite und Multiposting. Sprich ruhig, glaubwürdig und lösungsorientiert. Stelle immer nur eine Frage gleichzeitig. Verstehe zuerst den Hiring-Bedarf, bevor du verkaufst. Führe zu einem klaren nächsten Schritt. Rabatt ist nur gezielt bis maximal 10 Prozent erlaubt, niemals als früher Köder. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "7277d4fe-69fe-5dcd-ad19-a3cb5c8c42d8",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Danke, dass Sie kurz Zeit haben. Ich würde gern in zwei Minuten verstehen, ob zusätzliche Reichweite für Ihre Stellen aktuell sinnvoll ist.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "95f84e4c-2df7-5771-b06e-cdeee644eebc",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Qualifiziere Hiring-Bedarf, offene Rollen, Dringlichkeit, aktuelle Kanäle, Budgetsignal und Entscheidungsreife. Arbeite auf eine klare Empfehlung hin: Demo, Angebot, Follow-up oder höflicher Abschluss.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "9920e959-40d1-5fe2-8545-00af3de88955",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "6fd0c8ef-1ae8-5f18-91fc-ce1b7fe1f1a6",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Danke, das war hilfreich. Ich gehe mit dem vereinbarten nächsten Schritt weiter. Auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a70b42af-9e98-51ec-bec8-d8181bdf53cb",
+          "source": "7277d4fe-69fe-5dcd-ad19-a3cb5c8c42d8",
+          "target": "95f84e4c-2df7-5771-b06e-cdeee644eebc",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "e24a5d19-5ccd-5a14-832f-2b2486c17254",
+          "source": "95f84e4c-2df7-5771-b06e-cdeee644eebc",
+          "target": "9920e959-40d1-5fe2-8545-00af3de88955",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "c8337218-a738-5b75-81ec-65874308e669",
+          "source": "9920e959-40d1-5fe2-8545-00af3de88955",
+          "target": "6fd0c8ef-1ae8-5f18-91fc-ce1b7fe1f1a6",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "qualification",
+    "style": "consultative_advisor",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "qualification_hr_specialist",
+    "template_name": "Qualification - HR Specialist",
+    "template_description": "Bedarf, Dringlichkeit, Entscheidungsreife und Multiposting-Fit systematisch qualifizieren.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "7b67d00d-7456-53c0-b2d9-524f92b98bf2",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche Recruiting-Spezialistin bzw. ein deutscher Recruiting-Spezialist für Arbeitgeber mit akutem Personalbedarf. Nutze HR- und Recruiting-Sprache, bleibe professionell und präzise. Stelle immer nur eine Frage gleichzeitig. Verbinde Multiposting mit Time-to-Hire, Reichweite und Bewerberqualität. Rabatt ist nur bis maximal 10 Prozent erlaubt, wenn ein Abschluss unmittelbar dadurch gesichert wird. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "4a749ee8-c892-5c55-b131-89c855e0ab87",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Danke, dass Sie kurz Zeit haben. Ich würde gern in zwei Minuten verstehen, ob zusätzliche Reichweite für Ihre Stellen aktuell sinnvoll ist.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "ebde519e-e317-53a8-a0cd-10c4a05a6c34",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Qualifiziere Hiring-Bedarf, offene Rollen, Dringlichkeit, aktuelle Kanäle, Budgetsignal und Entscheidungsreife. Arbeite auf eine klare Empfehlung hin: Demo, Angebot, Follow-up oder höflicher Abschluss.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "df53073f-da82-5b43-88a8-142964c12b78",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "c5f53812-4c6c-5549-8018-f1b049436cc8",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Danke, das war hilfreich. Ich gehe mit dem vereinbarten nächsten Schritt weiter. Auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "72e4909c-26ba-5483-b0d8-0f9f8a293be3",
+          "source": "4a749ee8-c892-5c55-b131-89c855e0ab87",
+          "target": "ebde519e-e317-53a8-a0cd-10c4a05a6c34",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "3854387c-4659-5649-b3d9-2cfb309823c6",
+          "source": "ebde519e-e317-53a8-a0cd-10c4a05a6c34",
+          "target": "df53073f-da82-5b43-88a8-142964c12b78",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "6cbc95f6-9ceb-5e8a-9bbf-947bff38b59c",
+          "source": "df53073f-da82-5b43-88a8-142964c12b78",
+          "target": "c5f53812-4c6c-5549-8018-f1b049436cc8",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "qualification",
+    "style": "hr_specialist",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "demo_booking_direct_sdr",
+    "template_name": "Demo Booking - Direct SDR",
+    "template_description": "Interesse in einen festen Termin überführen, Zeitfenster und E-Mail bestätigen.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "17f60e4a-33f1-5d7c-a969-1e0973293d48",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche B2B-Sales-Entwicklerin bzw. ein B2B-Sales-Entwickler mit klarem Fokus auf Abschluss. Sprich kurz, natürlich und professionell. Stelle immer nur eine Frage gleichzeitig. Führe das Gespräch aktiv, aber höflich. Gehe standardmäßig auf Listenpreis. Rabatt ist nur bis maximal 10 Prozent erlaubt und nur dann, wenn ein echter Abschluss sehr wahrscheinlich ist. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "91ba1a16-4d2a-59ff-81ba-3b86c4497211",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Sie hatten Interesse signalisiert. Ich würde direkt einen kurzen Termin festmachen. Ist das okay?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "3b965983-8036-50d2-a7f0-5035c578bd7b",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Führe auf eine Terminbestätigung hin. Schlage zwei konkrete Zeitfenster vor. Wenn keines passt, frage nach einem bevorzugten Slot. Bestätige die E-Mail für Einladung oder Angebotsnachfassung.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "f37d72bf-1762-5fe8-9683-d37a09b96a28",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "3f2d9600-e4cd-5972-a3a6-8163721c12f6",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Perfekt, ich bestätige den Termin wie besprochen. Vielen Dank und bis bald."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a7487d80-5c55-5dd5-bc58-6ad1349bb891",
+          "source": "91ba1a16-4d2a-59ff-81ba-3b86c4497211",
+          "target": "3b965983-8036-50d2-a7f0-5035c578bd7b",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "667d0610-fa9d-5327-865e-38a158438f0d",
+          "source": "3b965983-8036-50d2-a7f0-5035c578bd7b",
+          "target": "f37d72bf-1762-5fe8-9683-d37a09b96a28",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "cd47fcd2-a4b1-569c-b4d2-2f9659adef1f",
+          "source": "f37d72bf-1762-5fe8-9683-d37a09b96a28",
+          "target": "3f2d9600-e4cd-5972-a3a6-8163721c12f6",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "demo_booking",
+    "style": "direct_sdr",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "demo_booking_consultative_advisor",
+    "template_name": "Demo Booking - Consultative Advisor",
+    "template_description": "Interesse in einen festen Termin überführen, Zeitfenster und E-Mail bestätigen.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "89584b86-5d1b-5a38-9e47-e4185b987d17",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche B2B-Beraterin bzw. ein B2B-Berater für Recruiting-Reichweite und Multiposting. Sprich ruhig, glaubwürdig und lösungsorientiert. Stelle immer nur eine Frage gleichzeitig. Verstehe zuerst den Hiring-Bedarf, bevor du verkaufst. Führe zu einem klaren nächsten Schritt. Rabatt ist nur gezielt bis maximal 10 Prozent erlaubt, niemals als früher Köder. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "f88a2b70-ba34-5134-9a82-908008e784dd",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Sie hatten Interesse signalisiert. Ich würde direkt einen kurzen Termin festmachen. Ist das okay?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "00cf3b71-6020-5647-bf1c-41e37a2444d7",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Führe auf eine Terminbestätigung hin. Schlage zwei konkrete Zeitfenster vor. Wenn keines passt, frage nach einem bevorzugten Slot. Bestätige die E-Mail für Einladung oder Angebotsnachfassung.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "ed5c95ec-f3b9-5f48-8f23-28c49136c0be",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "28bfa1bd-cc3e-5c7d-a267-ddd7230febf4",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Perfekt, ich bestätige den Termin wie besprochen. Vielen Dank und bis bald."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "29f3d00b-1554-55f0-bc82-8ae83d5ae464",
+          "source": "f88a2b70-ba34-5134-9a82-908008e784dd",
+          "target": "00cf3b71-6020-5647-bf1c-41e37a2444d7",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "eb9e22c8-d7e6-5331-9627-0ca5a5900ea6",
+          "source": "00cf3b71-6020-5647-bf1c-41e37a2444d7",
+          "target": "ed5c95ec-f3b9-5f48-8f23-28c49136c0be",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "1568db85-dea2-5804-a676-1b0b3aa1bb42",
+          "source": "ed5c95ec-f3b9-5f48-8f23-28c49136c0be",
+          "target": "28bfa1bd-cc3e-5c7d-a267-ddd7230febf4",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "demo_booking",
+    "style": "consultative_advisor",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "demo_booking_hr_specialist",
+    "template_name": "Demo Booking - HR Specialist",
+    "template_description": "Interesse in einen festen Termin überführen, Zeitfenster und E-Mail bestätigen.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "991d909b-fab4-54e4-b02c-cf16a2a86b8b",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche Recruiting-Spezialistin bzw. ein deutscher Recruiting-Spezialist für Arbeitgeber mit akutem Personalbedarf. Nutze HR- und Recruiting-Sprache, bleibe professionell und präzise. Stelle immer nur eine Frage gleichzeitig. Verbinde Multiposting mit Time-to-Hire, Reichweite und Bewerberqualität. Rabatt ist nur bis maximal 10 Prozent erlaubt, wenn ein Abschluss unmittelbar dadurch gesichert wird. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "d352bb4b-ddfa-5935-a4f1-078183f54371",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Sie hatten Interesse signalisiert. Ich würde direkt einen kurzen Termin festmachen. Ist das okay?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "a47ef965-c392-5f02-b124-abc18eab9ccd",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Führe auf eine Terminbestätigung hin. Schlage zwei konkrete Zeitfenster vor. Wenn keines passt, frage nach einem bevorzugten Slot. Bestätige die E-Mail für Einladung oder Angebotsnachfassung.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "4ad3c351-79a9-53db-a213-79f382a7154a",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "01f9a84a-8f65-509e-8a2e-40339b77fcb8",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Perfekt, ich bestätige den Termin wie besprochen. Vielen Dank und bis bald."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "9eb61846-6094-5a5a-ae39-c6397e1d1adf",
+          "source": "d352bb4b-ddfa-5935-a4f1-078183f54371",
+          "target": "a47ef965-c392-5f02-b124-abc18eab9ccd",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "098ec652-f13e-54aa-866b-6c134d7509b8",
+          "source": "a47ef965-c392-5f02-b124-abc18eab9ccd",
+          "target": "4ad3c351-79a9-53db-a213-79f382a7154a",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "a3dfe6fb-9cb4-5ce6-814e-cdbe150fe2d5",
+          "source": "4ad3c351-79a9-53db-a213-79f382a7154a",
+          "target": "01f9a84a-8f65-509e-8a2e-40339b77fcb8",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "demo_booking",
+    "style": "hr_specialist",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "follow_up_direct_sdr",
+    "template_name": "Follow-up - Direct SDR",
+    "template_description": "Nachfassen nach Interesse, Materialwunsch oder offenem Angebot mit sauberem nächsten Schritt.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "10272c41-65de-59ae-987d-0ef89084a138",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche B2B-Sales-Entwicklerin bzw. ein B2B-Sales-Entwickler mit klarem Fokus auf Abschluss. Sprich kurz, natürlich und professionell. Stelle immer nur eine Frage gleichzeitig. Führe das Gespräch aktiv, aber höflich. Gehe standardmäßig auf Listenpreis. Rabatt ist nur bis maximal 10 Prozent erlaubt und nur dann, wenn ein echter Abschluss sehr wahrscheinlich ist. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "5b2d9f90-9a5c-5d2b-9c26-5fe161e8d83b",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Ich wollte kurz an unser letztes Gespräch anknüpfen. Passt es gerade für eine Minute?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "d0a8029c-3f86-5d74-ad57-d560f6e2166a",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Prüfe, ob das Angebot oder Material gesehen wurde. Kläre, ob noch Fragen offen sind, ob ein Rückruf sinnvoll ist oder ob direkt der nächste kommerzielle Schritt erfolgen kann. Arbeite auf Antwort, Termin, Angebot oder Abschluss hin.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "2b0bbd4a-8aeb-59ec-8eb2-34dc13e4c68f",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "8e5cc31c-e61f-50f8-a096-af34e5c4144c",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Danke für die Rückmeldung. Ich mache weiter wie abgestimmt. Auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "479bbe88-5b0f-5b45-a1fa-830f2a07cf03",
+          "source": "5b2d9f90-9a5c-5d2b-9c26-5fe161e8d83b",
+          "target": "d0a8029c-3f86-5d74-ad57-d560f6e2166a",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "910572a7-2370-57ae-8205-f8dc5a0ecf1e",
+          "source": "d0a8029c-3f86-5d74-ad57-d560f6e2166a",
+          "target": "2b0bbd4a-8aeb-59ec-8eb2-34dc13e4c68f",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "5e1e75db-b0e2-5a6b-8bc5-2face9033b98",
+          "source": "2b0bbd4a-8aeb-59ec-8eb2-34dc13e4c68f",
+          "target": "8e5cc31c-e61f-50f8-a096-af34e5c4144c",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "follow_up",
+    "style": "direct_sdr",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "follow_up_consultative_advisor",
+    "template_name": "Follow-up - Consultative Advisor",
+    "template_description": "Nachfassen nach Interesse, Materialwunsch oder offenem Angebot mit sauberem nächsten Schritt.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "1fcf5c3a-b460-5ed6-b958-4dc9c87fda98",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche B2B-Beraterin bzw. ein B2B-Berater für Recruiting-Reichweite und Multiposting. Sprich ruhig, glaubwürdig und lösungsorientiert. Stelle immer nur eine Frage gleichzeitig. Verstehe zuerst den Hiring-Bedarf, bevor du verkaufst. Führe zu einem klaren nächsten Schritt. Rabatt ist nur gezielt bis maximal 10 Prozent erlaubt, niemals als früher Köder. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "a14ef1bf-b18b-5aa0-af12-f99e021bc816",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Ich wollte kurz an unser letztes Gespräch anknüpfen. Passt es gerade für eine Minute?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "564d002b-55f3-52c8-95d9-bb49bf52059c",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Prüfe, ob das Angebot oder Material gesehen wurde. Kläre, ob noch Fragen offen sind, ob ein Rückruf sinnvoll ist oder ob direkt der nächste kommerzielle Schritt erfolgen kann. Arbeite auf Antwort, Termin, Angebot oder Abschluss hin.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "9c8edd27-d6c3-5d27-9093-c8690c1ae1c1",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "8e894628-fc39-5dae-be6a-4619b585d074",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Danke für die Rückmeldung. Ich mache weiter wie abgestimmt. Auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "63e5e0b3-5bdc-5385-adf8-b8985456d36e",
+          "source": "a14ef1bf-b18b-5aa0-af12-f99e021bc816",
+          "target": "564d002b-55f3-52c8-95d9-bb49bf52059c",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "f012c8d1-5ea2-5a5c-a053-527ffe2fc943",
+          "source": "564d002b-55f3-52c8-95d9-bb49bf52059c",
+          "target": "9c8edd27-d6c3-5d27-9093-c8690c1ae1c1",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "5de391ac-fdf0-52ea-92d7-9c87fa181c0a",
+          "source": "9c8edd27-d6c3-5d27-9093-c8690c1ae1c1",
+          "target": "8e894628-fc39-5dae-be6a-4619b585d074",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "follow_up",
+    "style": "consultative_advisor",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "follow_up_hr_specialist",
+    "template_name": "Follow-up - HR Specialist",
+    "template_description": "Nachfassen nach Interesse, Materialwunsch oder offenem Angebot mit sauberem nächsten Schritt.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "8e46e1a0-3b56-59e8-a0d8-378835efc96e",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche Recruiting-Spezialistin bzw. ein deutscher Recruiting-Spezialist für Arbeitgeber mit akutem Personalbedarf. Nutze HR- und Recruiting-Sprache, bleibe professionell und präzise. Stelle immer nur eine Frage gleichzeitig. Verbinde Multiposting mit Time-to-Hire, Reichweite und Bewerberqualität. Rabatt ist nur bis maximal 10 Prozent erlaubt, wenn ein Abschluss unmittelbar dadurch gesichert wird. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "37f11f0f-1da2-55fa-bb38-4fce7b4460bc",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Ich wollte kurz an unser letztes Gespräch anknüpfen. Passt es gerade für eine Minute?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "f15ba833-433e-57d6-bf0d-d76661d94b30",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Prüfe, ob das Angebot oder Material gesehen wurde. Kläre, ob noch Fragen offen sind, ob ein Rückruf sinnvoll ist oder ob direkt der nächste kommerzielle Schritt erfolgen kann. Arbeite auf Antwort, Termin, Angebot oder Abschluss hin.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "ac37ef3f-fb6a-52a3-bd80-befdae13373e",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "1a94a52a-272d-5571-9dba-c37b5be94f54",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Danke für die Rückmeldung. Ich mache weiter wie abgestimmt. Auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "db98553b-d77e-5593-98e6-e9fe49635354",
+          "source": "37f11f0f-1da2-55fa-bb38-4fce7b4460bc",
+          "target": "f15ba833-433e-57d6-bf0d-d76661d94b30",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "93415c7a-e02d-5803-abea-5c2034f29a01",
+          "source": "f15ba833-433e-57d6-bf0d-d76661d94b30",
+          "target": "ac37ef3f-fb6a-52a3-bd80-befdae13373e",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "ffdbe219-a9a9-5e47-8fba-e5ee8092254c",
+          "source": "ac37ef3f-fb6a-52a3-bd80-befdae13373e",
+          "target": "1a94a52a-272d-5571-9dba-c37b5be94f54",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "follow_up",
+    "style": "hr_specialist",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "inbound_hr_inquiry_direct_sdr",
+    "template_name": "Inbound HR Inquiry - Direct SDR",
+    "template_description": "Inbound- oder Rückruf-Anfrage aus HR/Recruiting aufnehmen, strukturieren und in den passenden nächsten Schritt führen.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "f849852a-4ee0-583c-8461-e003520a41f2",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche B2B-Sales-Entwicklerin bzw. ein B2B-Sales-Entwickler mit klarem Fokus auf Abschluss. Sprich kurz, natürlich und professionell. Stelle immer nur eine Frage gleichzeitig. Führe das Gespräch aktiv, aber höflich. Gehe standardmäßig auf Listenpreis. Rabatt ist nur bis maximal 10 Prozent erlaubt und nur dann, wenn ein echter Abschluss sehr wahrscheinlich ist. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "818b4d3c-01a1-5b75-9061-eabe9b49d3b9",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Guten Tag, danke für Ihr Interesse. Wobei darf ich Sie im Recruiting-Kontext heute am besten unterstützen?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "0545bf84-5e29-5a08-a86f-d0af67cf2834",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Kläre das Anliegen der Person, beantworte high-level Fragen, prüfe aktuellen Hiring-Druck und entscheide, ob Demo, Angebot, Follow-up oder direkte Einordnung in den Vertriebsprozess sinnvoll ist.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "bbf3cf1e-7744-5c2d-97b4-4a1f779c7d09",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "19fa2a41-4746-567d-b809-31411db15b1a",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Danke für das Gespräch. Ich halte mich an den nächsten Schritt, den wir vereinbart haben. Auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "23a3b745-a6f6-5252-a398-55318f6a5993",
+          "source": "818b4d3c-01a1-5b75-9061-eabe9b49d3b9",
+          "target": "0545bf84-5e29-5a08-a86f-d0af67cf2834",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "61a6e1ea-1871-5420-a0cb-40d7818fdaeb",
+          "source": "0545bf84-5e29-5a08-a86f-d0af67cf2834",
+          "target": "bbf3cf1e-7744-5c2d-97b4-4a1f779c7d09",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "33a10c03-0d92-5f66-82b3-8d6f935466f4",
+          "source": "bbf3cf1e-7744-5c2d-97b4-4a1f779c7d09",
+          "target": "19fa2a41-4746-567d-b809-31411db15b1a",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "inbound_hr_inquiry",
+    "style": "direct_sdr",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "inbound_hr_inquiry_consultative_advisor",
+    "template_name": "Inbound HR Inquiry - Consultative Advisor",
+    "template_description": "Inbound- oder Rückruf-Anfrage aus HR/Recruiting aufnehmen, strukturieren und in den passenden nächsten Schritt führen.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "48d9f0a5-69c0-5fff-9829-077f0c900e5c",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche B2B-Beraterin bzw. ein B2B-Berater für Recruiting-Reichweite und Multiposting. Sprich ruhig, glaubwürdig und lösungsorientiert. Stelle immer nur eine Frage gleichzeitig. Verstehe zuerst den Hiring-Bedarf, bevor du verkaufst. Führe zu einem klaren nächsten Schritt. Rabatt ist nur gezielt bis maximal 10 Prozent erlaubt, niemals als früher Köder. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "4294038c-a49f-5e69-b9f5-26479f7eb96c",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Guten Tag, danke für Ihr Interesse. Wobei darf ich Sie im Recruiting-Kontext heute am besten unterstützen?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "16802f93-0441-5427-9866-2f832d68a1ac",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Kläre das Anliegen der Person, beantworte high-level Fragen, prüfe aktuellen Hiring-Druck und entscheide, ob Demo, Angebot, Follow-up oder direkte Einordnung in den Vertriebsprozess sinnvoll ist.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "fc022547-e338-5fd4-b988-ca3b602aed9b",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "2789c3f0-ab0d-55cc-bc62-5e56fe67d0cb",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Danke für das Gespräch. Ich halte mich an den nächsten Schritt, den wir vereinbart haben. Auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a0ab20e8-eeb9-5cf7-aca6-60c60d1a3f99",
+          "source": "4294038c-a49f-5e69-b9f5-26479f7eb96c",
+          "target": "16802f93-0441-5427-9866-2f832d68a1ac",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "f49deaed-1aaf-511e-913c-9dadf6dd0f3e",
+          "source": "16802f93-0441-5427-9866-2f832d68a1ac",
+          "target": "fc022547-e338-5fd4-b988-ca3b602aed9b",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "1c2ad4ab-bb8f-5f8b-949b-37144a5ef347",
+          "source": "fc022547-e338-5fd4-b988-ca3b602aed9b",
+          "target": "2789c3f0-ab0d-55cc-bc62-5e56fe67d0cb",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "inbound_hr_inquiry",
+    "style": "consultative_advisor",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "inbound_hr_inquiry_hr_specialist",
+    "template_name": "Inbound HR Inquiry - HR Specialist",
+    "template_description": "Inbound- oder Rückruf-Anfrage aus HR/Recruiting aufnehmen, strukturieren und in den passenden nächsten Schritt führen.",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "d14bba9b-6626-50ec-860c-26f283cef5e3",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -140
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche Recruiting-Spezialistin bzw. ein deutscher Recruiting-Spezialist für Arbeitgeber mit akutem Personalbedarf. Nutze HR- und Recruiting-Sprache, bleibe professionell und präzise. Stelle immer nur eine Frage gleichzeitig. Verbinde Multiposting mit Time-to-Hire, Reichweite und Bewerberqualität. Rabatt ist nur bis maximal 10 Prozent erlaubt, wenn ein Abschluss unmittelbar dadurch gesichert wird. Ziel ist ein professioneller B2B-Verkauf von Multiposting oder zusätzlicher Portalschaltung in Deutschland."
+          }
+        },
+        {
+          "id": "e4b86e91-dda3-5c9d-9eda-a3c41660182e",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Guten Tag, danke für Ihr Interesse. Wobei darf ich Sie im Recruiting-Kontext heute am besten unterstützen?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "3f419b0e-9489-5967-808c-2693fb546744",
+          "type": "agentNode",
+          "position": {
+            "x": 380,
+            "y": 0
+          },
+          "data": {
+            "name": "Core Conversation",
+            "prompt": "Kläre das Anliegen der Person, beantworte high-level Fragen, prüfe aktuellen Hiring-Druck und entscheide, ob Demo, Angebot, Follow-up oder direkte Einordnung in den Vertriebsprozess sinnvoll ist.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "896f559d-71c2-536a-bb01-005047d047b2",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "CRM / Next Step (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/lead",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "8a9eddd1-0f66-51f0-916f-bd096e3fe561",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Danke für das Gespräch. Ich halte mich an den nächsten Schritt, den wir vereinbart haben. Auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "4598bad1-fc97-528a-9fc6-f77fe1141efa",
+          "source": "e4b86e91-dda3-5c9d-9eda-a3c41660182e",
+          "target": "3f419b0e-9489-5967-808c-2693fb546744",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact allows the conversation to continue or answers the opening question."
+          }
+        },
+        {
+          "id": "86e071cf-fb74-5cd1-919e-62ecba3ca740",
+          "source": "3f419b0e-9489-5967-808c-2693fb546744",
+          "target": "896f559d-71c2-536a-bb01-005047d047b2",
+          "data": {
+            "label": "Next step",
+            "condition": "A meaningful sales outcome or next step has been identified.",
+            "transition_speech": "Danke, ich halte das direkt fest."
+          }
+        },
+        {
+          "id": "0c1e511e-32ee-5870-8d5b-15e6514ade50",
+          "source": "896f559d-71c2-536a-bb01-005047d047b2",
+          "target": "8a9eddd1-0f66-51f0-916f-bd096e3fe561",
+          "data": {
+            "label": "Close",
+            "condition": "Webhook is executed or intentionally skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    },
+    "motion": "inbound_hr_inquiry",
+    "style": "hr_specialist",
+    "template_kind": "variant"
+  },
+  {
+    "template_key": "main_outbound_demo",
+    "template_name": "Stepsales Main - Outbound Qualification to Demo",
+    "template_description": "Kompletter Outbound-Flow von Erstkontakt über Qualifizierung und Einwandbehandlung bis Demo-Termin.",
+    "template_kind": "main",
+    "motion": "main",
+    "style": "direct_sdr",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "4f7a6653-264d-5c19-8a43-c937c72f82a9",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -160
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche B2B-Sales-Agentin für Multiposting. Sprich kurz, professionell und natürlich. Stelle immer nur eine Frage gleichzeitig. Ziel ist Abschluss im Erstgespräch oder Demo-Termin als nächster Schritt. Rabatt bis maximal 10 Prozent ist nur als gezielter Closing-Hebel erlaubt."
+          }
+        },
+        {
+          "id": "8d840e81-ce6c-5a1c-91eb-30b91d549db5",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Guten Tag, ich rufe an, weil Sie aktuell aktiv rekrutieren. Haben Sie kurz 30 Sekunden?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "eca1fbb1-874a-544e-8b53-c60adde1d3c4",
+          "type": "agentNode",
+          "position": {
+            "x": 360,
+            "y": 0
+          },
+          "data": {
+            "name": "Qualification",
+            "prompt": "Verstehe kurz die Recruiting-Situation: welche Rollen offen sind, wie dringend besetzt werden muss, welche Kanäle aktuell genutzt werden und ob zusätzliche Reichweite relevant ist.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "bd9662fd-425b-5725-8e17-576deba23e05",
+          "type": "agentNode",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "Objection Handling",
+            "prompt": "Behandle Einwände zu Preis, Timing, bestehendem Anbieter oder interner Freigabe. Wenn der Abschluss sehr wahrscheinlich ist und nur ein kleiner Anreiz fehlt, darfst du bis maximal 10 Prozent Rabatt anbieten.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Welcher Einwand ist aktuell relevant?"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse nach Einwandbehandlung"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              }
+            ]
+          }
+        },
+        {
+          "id": "20c9c73d-43b1-536c-9378-442228193a34",
+          "type": "agentNode",
+          "position": {
+            "x": 1160,
+            "y": 0
+          },
+          "data": {
+            "name": "Book Demo",
+            "prompt": "Wenn Interesse vorhanden ist, führe zu einem kurzen Demo-Termin. Schlage zwei Zeitfenster vor, bestätige E-Mail und fasse den Nutzen kurz zusammen.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Termin oder Zeitfenster"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Bestätigter Demo-Schritt"
+              }
+            ]
+          }
+        },
+        {
+          "id": "9405d680-0b72-5901-a30a-4f0bfbf9880a",
+          "type": "webhook",
+          "position": {
+            "x": 1540,
+            "y": 0
+          },
+          "data": {
+            "name": "Store Lead / Demo (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/demo",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "0fc6ccd0-3022-52e8-81f6-c0a5a7b48f96",
+          "type": "endCall",
+          "position": {
+            "x": 1900,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Perfekt, ich bestätige den nächsten Schritt wie besprochen. Vielen Dank und auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "edca829d-78ba-5e78-aa18-0ac0f6016460",
+          "source": "8d840e81-ce6c-5a1c-91eb-30b91d549db5",
+          "target": "eca1fbb1-874a-544e-8b53-c60adde1d3c4",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact continues the conversation."
+          }
+        },
+        {
+          "id": "e554a756-3354-5cde-8fd1-7505c73fa002",
+          "source": "eca1fbb1-874a-544e-8b53-c60adde1d3c4",
+          "target": "bd9662fd-425b-5725-8e17-576deba23e05",
+          "data": {
+            "label": "Positioning",
+            "condition": "Need and relevance have been established."
+          }
+        },
+        {
+          "id": "8545528b-a870-5f77-8919-6afb67cd24c4",
+          "source": "bd9662fd-425b-5725-8e17-576deba23e05",
+          "target": "20c9c73d-43b1-536c-9378-442228193a34",
+          "data": {
+            "label": "Interested",
+            "condition": "The prospect is interested and open to a next step."
+          }
+        },
+        {
+          "id": "77d66103-f692-5ca1-af41-6499e337c517",
+          "source": "20c9c73d-43b1-536c-9378-442228193a34",
+          "target": "9405d680-0b72-5901-a30a-4f0bfbf9880a",
+          "data": {
+            "label": "Booked",
+            "condition": "A demo step or appointment has been agreed."
+          }
+        },
+        {
+          "id": "b60916a7-44fc-5731-9c04-d2e44e6f95c8",
+          "source": "9405d680-0b72-5901-a30a-4f0bfbf9880a",
+          "target": "0fc6ccd0-3022-52e8-81f6-c0a5a7b48f96",
+          "data": {
+            "label": "Done",
+            "condition": "CRM handoff completed or skipped."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    }
+  },
+  {
+    "template_key": "main_outbound_followup",
+    "template_name": "Stepsales Main - Outbound Qualification to Follow-up",
+    "template_description": "Kompletter Outbound-Flow bis Angebot, Follow-up oder Zweittermin, wenn kein Sofortabschluss möglich ist.",
+    "template_kind": "main",
+    "motion": "main",
+    "style": "consultative_advisor",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "49029948-f4da-504f-83e0-cbe80569c3fc",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -160
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche B2B-Beraterin für Multiposting und Recruiting-Reichweite. Führe professionell, ruhig und abschlusssicher. Wenn kein Sofortabschluss möglich ist, sichere Angebot, Rückruf oder zweiten Termin mit klarem Follow-up."
+          }
+        },
+        {
+          "id": "7a94753a-386e-5214-a50b-be362ce389f5",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Guten Tag, ich rufe kurz an, weil Sie aktuell Personal suchen. Passt eine knappe Frage dazu?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "detect_voicemail": true
+          }
+        },
+        {
+          "id": "a2d1bf28-5723-5e40-818c-de437aa0a94c",
+          "type": "agentNode",
+          "position": {
+            "x": 360,
+            "y": 0
+          },
+          "data": {
+            "name": "Qualification",
+            "prompt": "Kläre Hiring-Bedarf, Anzahl offener Rollen, aktuelle Kanäle und Dringlichkeit. Finde heraus, ob zusätzliche Reichweite jetzt geschäftlich sinnvoll ist.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "7a809e2c-924e-5dc5-aca0-3fa0e8610393",
+          "type": "agentNode",
+          "position": {
+            "x": 760,
+            "y": 0
+          },
+          "data": {
+            "name": "Offer Path",
+            "prompt": "Wenn echtes Interesse da ist, aber noch keine direkte Entscheidung, führe zu einem Angebot oder Zweittermin. Bestätige die E-Mail-Adresse und vereinbare einen klaren Review-Zeitpunkt.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "Empfänger-E-Mail für Angebot oder Follow-up"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Angebot, Rückruf oder Zweittermin"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann wird das Angebot geprüft oder der Zweittermin stattfinden?"
+              }
+            ]
+          }
+        },
+        {
+          "id": "9692bf93-9821-50ea-bf80-740cff02006b",
+          "type": "webhook",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "name": "Offer / Follow-up (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/offer",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "3b91bf2b-6e31-5613-8157-5c6945d8aa18",
+          "type": "endCall",
+          "position": {
+            "x": 1520,
+            "y": 0
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Danke, ich sende alles wie besprochen und melde mich zum vereinbarten Zeitpunkt. Auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "46aa14b6-61dd-5b2a-a9f1-220f07f8d71b",
+          "source": "7a94753a-386e-5214-a50b-be362ce389f5",
+          "target": "a2d1bf28-5723-5e40-818c-de437aa0a94c",
+          "data": {
+            "label": "Continue",
+            "condition": "The contact continues the conversation."
+          }
+        },
+        {
+          "id": "0dbb7425-9a95-5436-a805-073fddfd5375",
+          "source": "a2d1bf28-5723-5e40-818c-de437aa0a94c",
+          "target": "7a809e2c-924e-5dc5-aca0-3fa0e8610393",
+          "data": {
+            "label": "Interested",
+            "condition": "The lead is relevant but not yet ready to close immediately."
+          }
+        },
+        {
+          "id": "9199a3b0-2de3-56d6-bd76-599d4dcdf9ca",
+          "source": "7a809e2c-924e-5dc5-aca0-3fa0e8610393",
+          "target": "9692bf93-9821-50ea-bf80-740cff02006b",
+          "data": {
+            "label": "Send",
+            "condition": "A proposal, follow-up, or second appointment has been agreed."
+          }
+        },
+        {
+          "id": "73175978-c61f-5f0f-965a-ed0c93b6d05a",
+          "source": "9692bf93-9821-50ea-bf80-740cff02006b",
+          "target": "3b91bf2b-6e31-5613-8157-5c6945d8aa18",
+          "data": {
+            "label": "Done",
+            "condition": "Follow-up action is logged or dispatched."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    }
+  },
+  {
+    "template_key": "main_inbound_conversion",
+    "template_name": "Stepsales Main - Inbound HR Conversion Flow",
+    "template_description": "Inbound- oder Rückruf-Flow für HR-Anfragen mit FAQ, Qualifizierung, Angebot oder Demo-Übergang.",
+    "template_kind": "main",
+    "motion": "main",
+    "style": "hr_specialist",
+    "template_json": {
+      "nodes": [
+        {
+          "id": "ca180baa-f0e0-54d5-89d8-7476db0e34bd",
+          "type": "globalNode",
+          "position": {
+            "x": 0,
+            "y": -180
+          },
+          "data": {
+            "name": "Global",
+            "prompt": "Du bist eine deutsche Recruiting-Spezialistin für Inbound-HR-Gespräche. Beantworte Fragen präzise, frage nur eine Sache gleichzeitig und führe auf den passenden kommerziellen nächsten Schritt."
+          }
+        },
+        {
+          "id": "ec78e548-1887-5cdc-9363-342412f30fc1",
+          "type": "startCall",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "data": {
+            "name": "Start",
+            "prompt": "Guten Tag, danke für Ihr Interesse. Was ist für Sie im Recruiting gerade am wichtigsten?",
+            "allow_interrupt": true,
+            "wait_for_user_response": true
+          }
+        },
+        {
+          "id": "42e377f3-3644-5d5a-a541-86973a2e2d18",
+          "type": "qa",
+          "position": {
+            "x": 360,
+            "y": -120
+          },
+          "data": {
+            "name": "FAQ / Product Q&A",
+            "question": "Welche Fragen zur Reichweite, zu Portalen, Preisen oder zum Ablauf sollen beantwortet werden?"
+          }
+        },
+        {
+          "id": "fc78ecd9-729b-5497-8b4e-314e556978c5",
+          "type": "agentNode",
+          "position": {
+            "x": 360,
+            "y": 120
+          },
+          "data": {
+            "name": "Qualification",
+            "prompt": "Nach Klärung der Kernfrage qualifiziere Recruiting-Bedarf, Rollen, Zeitdruck und den sinnvollsten nächsten Schritt. Arbeite auf Demo, Angebot oder Follow-up hin.",
+            "allow_interrupt": true,
+            "wait_for_user_response": true,
+            "extraction_enabled": true,
+            "extraction_variables": [
+              {
+                "name": "contact_name",
+                "type": "string",
+                "prompt": "Name der Kontaktperson"
+              },
+              {
+                "name": "company_name",
+                "type": "string",
+                "prompt": "Firmenname"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "prompt": "Rolle oder Funktion der Person"
+              },
+              {
+                "name": "hiring_need",
+                "type": "string",
+                "prompt": "Welche Stelle oder welches Hiring-Ziel besteht?"
+              },
+              {
+                "name": "roles_hiring_for",
+                "type": "string",
+                "prompt": "Für welche Rollen wird gesucht?"
+              },
+              {
+                "name": "urgency",
+                "type": "string",
+                "prompt": "Wie dringend ist die Besetzung?"
+              },
+              {
+                "name": "budget_signal",
+                "type": "string",
+                "prompt": "Preissignal oder Budgeteinschätzung"
+              },
+              {
+                "name": "timeline",
+                "type": "string",
+                "prompt": "Wann soll die Stelle besetzt werden?"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "prompt": "E-Mail-Adresse für Follow-up oder Angebot"
+              },
+              {
+                "name": "next_step",
+                "type": "string",
+                "prompt": "Vereinbarter nächster Schritt"
+              },
+              {
+                "name": "objection_type",
+                "type": "string",
+                "prompt": "Wichtigster Einwand, falls vorhanden"
+              },
+              {
+                "name": "interest_level",
+                "type": "string",
+                "prompt": "Interesse: hoch, mittel, niedrig, nein"
+              }
+            ]
+          }
+        },
+        {
+          "id": "06eead3e-a277-5ed6-919e-e91567147e88",
+          "type": "webhook",
+          "position": {
+            "x": 760,
+            "y": 120
+          },
+          "data": {
+            "name": "CRM / Handoff (Webhook)",
+            "enabled": false,
+            "http_method": "POST",
+            "endpoint_url": "https://example.invalid/stepsales/inbound",
+            "custom_headers": [],
+            "payload_template": {
+              "contact_name": "{{gathered_context.contact_name}}",
+              "company_name": "{{gathered_context.company_name}}",
+              "role": "{{gathered_context.role}}",
+              "hiring_need": "{{gathered_context.hiring_need}}",
+              "roles_hiring_for": "{{gathered_context.roles_hiring_for}}",
+              "urgency": "{{gathered_context.urgency}}",
+              "budget_signal": "{{gathered_context.budget_signal}}",
+              "timeline": "{{gathered_context.timeline}}",
+              "email": "{{gathered_context.email}}",
+              "next_step": "{{gathered_context.next_step}}",
+              "objection_type": "{{gathered_context.objection_type}}",
+              "interest_level": "{{gathered_context.interest_level}}"
+            }
+          }
+        },
+        {
+          "id": "8da91818-cf13-590e-9e4d-06facc3c7872",
+          "type": "endCall",
+          "position": {
+            "x": 1140,
+            "y": 120
+          },
+          "data": {
+            "name": "End",
+            "prompt": "Danke für Ihre Zeit. Ich setze den vereinbarten nächsten Schritt direkt um. Auf Wiederhören."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "7871998d-493e-5d3e-a56c-223dcab14b41",
+          "source": "ec78e548-1887-5cdc-9363-342412f30fc1",
+          "target": "42e377f3-3644-5d5a-a541-86973a2e2d18",
+          "data": {
+            "label": "Answer first",
+            "condition": "The caller starts with a product or process question."
+          }
+        },
+        {
+          "id": "b0745276-c32a-5251-9d52-e1e0f91e49f3",
+          "source": "ec78e548-1887-5cdc-9363-342412f30fc1",
+          "target": "fc78ecd9-729b-5497-8b4e-314e556978c5",
+          "data": {
+            "label": "Qualify directly",
+            "condition": "The caller is ready to discuss needs directly."
+          }
+        },
+        {
+          "id": "ab4cde4c-7781-5a83-a8c6-1d4e71f98e23",
+          "source": "42e377f3-3644-5d5a-a541-86973a2e2d18",
+          "target": "fc78ecd9-729b-5497-8b4e-314e556978c5",
+          "data": {
+            "label": "Continue",
+            "condition": "The key inbound question has been answered."
+          }
+        },
+        {
+          "id": "c6777017-4821-56b5-aed0-b3c2377d58d9",
+          "source": "fc78ecd9-729b-5497-8b4e-314e556978c5",
+          "target": "06eead3e-a277-5ed6-919e-e91567147e88",
+          "data": {
+            "label": "Next step",
+            "condition": "A clear next step has been identified."
+          }
+        },
+        {
+          "id": "45a1ab45-a559-56b2-b811-7f85e7de167e",
+          "source": "06eead3e-a277-5ed6-919e-e91567147e88",
+          "target": "8da91818-cf13-590e-9e4d-06facc3c7872",
+          "data": {
+            "label": "Done",
+            "condition": "Inbound handoff is recorded or dispatched."
+          }
+        }
+      ],
+      "viewport": {
+        "x": 0,
+        "y": 0,
+        "zoom": 1
+      }
+    }
+  }
+]

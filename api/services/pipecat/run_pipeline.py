@@ -626,6 +626,18 @@ async def _run_pipeline_impl(
                     term.strip() for term in dictionary.split(",") if term.strip()
                 ]
 
+    # P6: voice-eval / training-voice sessions stamp max_duration_hint_seconds on
+    # initial_context — apply as a hard ceiling so short sessions cannot run to
+    # the full workflow max_call_duration (cost control).
+    try:
+        from api.services.evals.voice_guards import resolve_voice_eval_duration_cap
+
+        ve_cap = resolve_voice_eval_duration_cap(workflow_run.initial_context)
+        if ve_cap is not None:
+            max_call_duration_seconds = min(int(max_call_duration_seconds), int(ve_cap))
+    except Exception:
+        pass
+
     # Resolve model overrides from the version onto global org config (skip
     # when the caller already resolved it).
     if resolved_user_config is None:

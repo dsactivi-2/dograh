@@ -1,0 +1,22 @@
+Einstellung,Datei_Ort,Default,Typ,Was_ist_das,Wozu,Wer_aendert
+is_superuser,api/db/models.py UserModel,false,bool,Plattform-Admin,Superuser-APIs,Superuser/Deploy
+ENABLE_SIGNUP,api/constants.py / .env.example,true,bool,Oeffentliche Registrierung,false=Invite-only,Ops
+ENABLE_AWS_S3,api/constants.py,false,bool,S3 statt MinIO,Cloud-Storage,Ops
+ENABLE_TELEMETRY,api/constants.py,true,bool,PostHog/Sentry,Analytics,Ops
+ENABLE_ARI_STASIS,api/constants.py,false,bool,Asterisk ARI,On-Prem Telephony,Ops
+FORCE_TURN_RELAY,api/constants.py,false,bool,Nur TURN ICE,NAT-Diagnose,Dev/Ops
+SERIALIZE_LOG_OUTPUT,api/constants.py,false,bool,JSON-Logs,Log-Pipelines,Ops
+MINIO_SECURE,api/constants.py,false,bool,MinIO HTTPS,TLS Object Store,Ops
+AUTH_PROVIDER,api/constants.py,local,string,local oder stack,Auth-Backend,Ops
+DEPLOYMENT_MODE,api/constants.py,oss,string,Deploy-Modus,Feature gates,Ops
+external_pbx_integrations_enabled,organization_preferences,false,bool,Externe PBX,Feld-Mappings,Org-Admin
+context_compaction_enabled,workflow_configurations,false,bool,Kontext kompakt,Token-Sparen,Builder
+ambient_noise.enabled,workflow_configurations,false,bool,Ambient Noise,Klang,Builder
+quota_enabled,OrganizationModel,false,bool,Legacy Quota deprecated,MPS statt lokal,Deploy
+is_active,APIKeyModel,true,bool,API-Key aktiv,Auth X-API-Key,Org-Admin
+is_realtime,EffectiveAIModelConfiguration,false,bool,Realtime vs Pipeline,Latenz/Modell,Org-Admin
+DEFAULT_ORG_CONCURRENCY_LIMIT,api/constants.py,10,int,Max parallele Calls/Org,Capacity,Ops
+max_call_duration,workflow_configurations,300,int,Call-Laenge Sekunden,Kosten/Slots,Builder
+DEFAULT_CAMPAIGN_RETRY max_retries,api/constants.py,1,int,Campaign Retries,Outbound,Ops/Builder
+circuit_breaker.enabled,api/constants.py,true,bool,Campaign Auto-Pause,Schutz,Ops
+retry_on_voicemail,DEFAULT_CAMPAIGN_RETRY_CONFIG,false,bool,Retry bei Voicemail,Cadence,Ops

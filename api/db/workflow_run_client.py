@@ -1,7 +1,8 @@
 import uuid
+from datetime import UTC, datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload, selectinload
 
@@ -515,3 +516,31 @@ class WorkflowRunClient(BaseDBClient):
                 .limit(1)
             )
             return result.scalars().first()
+
+    async def count_recent_voice_eval_sessions(
+        self,
+        organization_id: int,
+        *,
+        hours: int = 1,
+    ) -> int:
+        """Count org voice-eval/training sessions created in the last `hours`.
+
+        Matches runs named VEVAL-* or VTRAIN-* (P6 prefixes). Used for rate limits.
+        """
+        since = datetime.now(UTC) - timedelta(hours=max(1, hours))
+        async with self.async_session() as session:
+            result = await session.execute(
+                select(func.count(WorkflowRunModel.id))
+                .select_from(WorkflowRunModel)
+                .join(WorkflowModel, WorkflowRunModel.workflow_id == WorkflowModel.id)
+                .where(
+                    WorkflowModel.organization_id == organization_id,
+                    WorkflowRunModel.created_at >= since,
+                    or_(
+                        WorkflowRunModel.name.like("VEVAL-%"),
+                        WorkflowRunModel.name.like("VTRAIN-%"),
+                    ),
+                )
+            )
+            return int(result.scalar() or 0)
+
